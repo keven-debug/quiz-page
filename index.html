@@ -8,7 +8,7 @@
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
 
   <!-- HubSpot Forms embed -->
   <script charset="utf-8" type="text/javascript" src="https://js.hsforms.net/forms/embed/v2.js"></script>
@@ -39,8 +39,8 @@
       --shadow-sm: 0 1px 2px rgba(7, 43, 100, 0.05);
       --shadow-md: 0 4px 24px rgba(7, 43, 100, 0.07);
       --shadow-lg: 0 12px 48px rgba(7, 43, 100, 0.10);
-      --font-sans: "Geist", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      --font-display: "Geist Mono", ui-monospace, "SF Mono", Menlo, monospace;
+      --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      --font-display: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       --transition: 240ms cubic-bezier(0.22, 1, 0.36, 1);
     }
 
@@ -557,14 +557,13 @@
 
     .nav {
       display: flex;
-      justify-content: space-between;
+      justify-content: flex-start;
       align-items: center;
-      margin-top: 32px;
-      padding-top: 24px;
+      margin-top: 24px;
+      padding-top: 20px;
       border-top: 1px solid var(--border);
     }
     .nav[hidden] { display: none; }
-    .nav__spacer { width: 1px; }
 
     /* =========================================================
        Answer detail (shown on screen after results)
@@ -861,16 +860,11 @@
 
     </main>
 
-    <!-- ============== NAV ============== -->
+    <!-- ============== NAV (back button only — questions auto-advance on selection) ============== -->
     <nav class="nav" id="nav" hidden>
       <button class="btn btn--ghost" id="backBtn">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M11 19l-7-7 7-7"/></svg>
         Back
-      </button>
-      <div class="nav__spacer"></div>
-      <button class="btn btn--primary" id="nextBtn" disabled>
-        Next
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
       </button>
     </nav>
 
@@ -1013,7 +1007,6 @@
       qOptions:      $('#qOptions'),
       nav:           $('#nav'),
       backBtn:       $('#backBtn'),
-      nextBtn:       $('#nextBtn'),
       hsTarget:      $('#hubspot-form-target'),
       hsFallback:    $('#hubspot-form-fallback'),
       skipGate:      $('#skipGate'),
@@ -1059,17 +1052,9 @@
         els.progress.hidden = true;
       }
 
-      // Nav — show on questions only (intro has its own CTA, gate has form, results has CTAs)
+      // Nav — show on questions only (just the back button now; selecting an option auto-advances)
       if (state.screen === 'question') {
         els.nav.hidden = false;
-        els.backBtn.style.visibility = 'visible';
-        els.nextBtn.disabled = state.answers[state.qIndex] === null;
-        // last question: change "Next" label to "See my result"
-        const isLast = state.qIndex === QUIZ.length - 1;
-        const nextLabel = els.nextBtn.childNodes[0];
-        if (nextLabel && nextLabel.nodeType === 3) {
-          nextLabel.textContent = isLast ? 'See my result ' : 'Next ';
-        }
       } else {
         els.nav.hidden = true;
       }
@@ -1100,18 +1085,32 @@
     }
 
     function selectOption(letter) {
+      if (state.transitioning) return; // ignore rapid double-clicks during transition
+      state.transitioning = true;
       state.answers[state.qIndex] = letter;
-      // Update UI immediately
+
+      // Visual feedback — highlight the selected option
       $$('.option').forEach(o => {
         const isSel = o.querySelector('.option__letter').textContent === letter;
         o.classList.toggle('is-selected', isSel);
         o.setAttribute('aria-checked', isSel ? 'true' : 'false');
       });
-      els.nextBtn.disabled = false;
+
+      // Auto-advance after a short delay so the user actually sees their pick land
+      setTimeout(() => {
+        state.transitioning = false;
+        if (state.qIndex < QUIZ.length - 1) {
+          state.qIndex++;
+          go('question');
+        } else {
+          computeResult();
+          go('gate');
+        }
+      }, 380);
     }
 
     /* =========================================================
-       NAV BUTTONS
+       NAV BUTTONS (back only — selecting an option auto-advances)
        ========================================================= */
     document.addEventListener('click', e => {
       const action = e.target.closest('[data-action]')?.dataset.action;
@@ -1119,24 +1118,13 @@
     });
 
     els.backBtn.addEventListener('click', () => {
+      if (state.transitioning) return;
       if (state.screen === 'question') {
         if (state.qIndex === 0) go('intro');
         else { state.qIndex--; go('question'); }
       } else if (state.screen === 'gate') {
         state.qIndex = QUIZ.length - 1;
         go('question');
-      }
-    });
-
-    els.nextBtn.addEventListener('click', () => {
-      if (state.answers[state.qIndex] === null) return;
-      if (state.qIndex < QUIZ.length - 1) {
-        state.qIndex++;
-        go('question');
-      } else {
-        // Move to gate
-        computeResult();
-        go('gate');
       }
     });
 
