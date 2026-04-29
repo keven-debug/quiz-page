@@ -571,17 +571,23 @@
 
     /* =========================================================
        PDF template (off-screen, used to render the download)
+       Note: hardcoded hex (no CSS vars) — html2canvas does not
+       reliably resolve CSS custom properties in its clone.
        ========================================================= */
     .pdf-template {
-      position: absolute;
-      left: -9999px;
+      position: fixed;
       top: 0;
+      left: 0;
       width: 794px;          /* A4 @ 96dpi */
       padding: 56px 64px;
-      background: white;
-      color: var(--text);
-      font-family: var(--font-sans);
+      background: #ffffff;
+      color: #081a33;
+      font-family: "Geist", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       box-sizing: border-box;
+      /* keep in render flow but visually off-screen */
+      transform: translateY(-200vh);
+      pointer-events: none;
+      z-index: -1;
     }
     .pdf-template * { box-sizing: border-box; }
     .pdf__header {
@@ -589,15 +595,15 @@
       justify-content: space-between;
       align-items: center;
       padding-bottom: 24px;
-      border-bottom: 2px solid var(--text-strong);
+      border-bottom: 2px solid #072b64;
       margin-bottom: 36px;
     }
     .pdf__brand {
-      font-family: var(--font-display);
+      font-family: "Geist Mono", ui-monospace, "SF Mono", Menlo, monospace;
       font-weight: 600;
       font-size: 22px;
       letter-spacing: -0.02em;
-      color: var(--text-strong);
+      color: #072b64;
       display: flex;
       align-items: center;
       gap: 10px;
@@ -606,55 +612,56 @@
       width: 10px;
       height: 10px;
       border-radius: 50%;
-      background: var(--accent);
+      background: #2682fd;
     }
     .pdf__date {
       font-size: 13px;
-      color: var(--text-muted);
+      color: #4a5876;
     }
     .pdf__eyebrow {
-      font-family: var(--font-display);
+      font-family: "Geist Mono", ui-monospace, monospace;
       font-size: 11px;
       font-weight: 500;
       letter-spacing: 0.08em;
       text-transform: uppercase;
-      color: var(--accent);
+      color: #2682fd;
       margin-bottom: 12px;
     }
     .pdf__title {
-      font-family: var(--font-display);
+      font-family: "Geist Mono", ui-monospace, monospace;
       font-weight: 600;
       font-size: 38px;
       line-height: 1.05;
       letter-spacing: -0.03em;
       margin: 0 0 20px;
-      color: var(--text-strong);
+      color: #072b64;
     }
     .pdf__lede {
       font-size: 16px;
       line-height: 1.55;
-      color: var(--text-muted);
+      color: #4a5876;
       margin: 0 0 32px;
     }
     .pdf__section {
       margin-bottom: 28px;
     }
     .pdf__section-title {
-      font-family: var(--font-display);
+      font-family: "Geist Mono", ui-monospace, monospace;
       font-size: 10px;
       font-weight: 600;
       letter-spacing: 0.1em;
       text-transform: uppercase;
-      color: var(--text-soft);
+      color: #8693a8;
       margin: 0 0 12px;
     }
     .pdf__callout {
       padding: 20px 24px;
-      background: var(--accent-tint);
-      border-left: 3px solid var(--accent);
-      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      background: #e7f1ff;
+      border-left: 3px solid #2682fd;
+      border-radius: 0 8px 8px 0;
       font-size: 15px;
       line-height: 1.5;
+      color: #081a33;
     }
     .pdf__answers {
       list-style: none;
@@ -663,7 +670,7 @@
     }
     .pdf__answer {
       padding: 14px 0;
-      border-bottom: 1px solid var(--border);
+      border-bottom: 1px solid #d6e3f0;
       display: grid;
       grid-template-columns: 24px 1fr;
       gap: 16px;
@@ -673,21 +680,21 @@
     .pdf__answer:last-child { border-bottom: none; }
     .pdf__answer-num {
       font-variant-numeric: tabular-nums;
-      color: var(--text-soft);
+      color: #8693a8;
       font-weight: 500;
     }
     .pdf__answer-q {
-      color: var(--text);
+      color: #081a33;
       font-weight: 500;
       margin-bottom: 4px;
     }
-    .pdf__answer-a { color: var(--text-muted); }
+    .pdf__answer-a { color: #4a5876; }
     .pdf__cta {
       margin-top: 36px;
       padding: 24px;
-      background: var(--text-strong);
+      background: #072b64;
       color: white;
-      border-radius: var(--radius-md);
+      border-radius: 12px;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -697,7 +704,7 @@
       flex: 1;
     }
     .pdf__cta-title {
-      font-family: var(--font-display);
+      font-family: "Geist Mono", ui-monospace, monospace;
       font-weight: 600;
       font-size: 20px;
       line-height: 1.15;
@@ -710,10 +717,10 @@
       margin: 0;
     }
     .pdf__cta-btn {
-      background: var(--accent);
+      background: #2682fd;
       color: white;
       padding: 12px 20px;
-      border-radius: var(--radius-sm);
+      border-radius: 8px;
       font-weight: 500;
       font-size: 14px;
       white-space: nowrap;
@@ -721,9 +728,9 @@
     .pdf__footer {
       margin-top: 36px;
       padding-top: 20px;
-      border-top: 1px solid var(--border);
+      border-top: 1px solid #d6e3f0;
       font-size: 11px;
-      color: var(--text-soft);
+      color: #8693a8;
       display: flex;
       justify-content: space-between;
     }
@@ -877,7 +884,7 @@
     const HUBSPOT_PORTAL_ID = "5408365";                                       // Axya portal
     const HUBSPOT_FORM_ID   = "cc6cdd8e-265a-4317-837e-b4983019bc1e";           // Quiz form GUID
     const HUBSPOT_REGION    = "na1";
-    const DEMO_URL          = "https://axya.co/demo";                          // ⬅️ update to actual demo URL
+    const DEMO_URL          = "https://axya.co/get-a-demo";                    // Book a demo URL
 
     // OPTIONAL: hidden HubSpot contact properties to track quiz
     // outcomes on the contact record. Add these fields to the
@@ -1185,8 +1192,15 @@
           postHeight();
         },
         onFormSubmitted: function () {
-          // Small delay so HubSpot finishes its own redirect/thank-you logic
-          setTimeout(() => go('results'), 200);
+          // 1. Show the results screen
+          // 2. Wait for the page (and fonts) to settle
+          // 3. Auto-download the PDF so it lands on the user's device
+          setTimeout(() => {
+            go('results');
+            setTimeout(() => {
+              generateAndDownloadPdf({ silent: true });
+            }, 1200);
+          }, 200);
         }
       });
     }
@@ -1235,28 +1249,74 @@
     /* =========================================================
        PDF DOWNLOAD
        ========================================================= */
-    els.downloadPdf.addEventListener('click', async () => {
+    async function generateAndDownloadPdf(opts = {}) {
+      const { silent = false } = opts;
+
+      // Build the template content
       buildPdfTemplate();
-      const opt = {
-        margin:       0,
-        filename:     'axya-quiz-snapshot.pdf',
-        image:        { type: 'jpeg', quality: 0.98 },
-        html2canvas:  { scale: 2, useCORS: true, backgroundColor: '#ffffff' },
-        jsPDF:        { unit: 'pt', format: 'a4', orientation: 'portrait' },
-        pagebreak:    { mode: ['avoid-all', 'css', 'legacy'] }
-      };
-      const original = els.downloadPdf.innerHTML;
-      els.downloadPdf.innerHTML = 'Generating...';
-      els.downloadPdf.disabled = true;
+
+      // Let the browser commit the DOM changes before measuring
+      await new Promise(r => requestAnimationFrame(r));
+      await new Promise(r => requestAnimationFrame(r));
+
+      // Wait for web fonts so Geist Mono actually renders in the canvas
       try {
-        await html2pdf().set(opt).from(els.pdfTemplate).save();
-      } catch (err) {
-        console.error('PDF generation failed', err);
-      } finally {
-        els.downloadPdf.innerHTML = original;
-        els.downloadPdf.disabled = false;
+        if (document.fonts && document.fonts.ready) {
+          await document.fonts.ready;
+        }
+      } catch (e) {
+        console.warn('document.fonts.ready failed, continuing anyway', e);
       }
-    });
+
+      // html2pdf options
+      const pdfOpts = {
+        margin:      0,
+        filename:    'axya-quiz-snapshot.pdf',
+        image:       { type: 'jpeg', quality: 0.98 },
+        html2canvas: {
+          scale: 2,
+          useCORS: true,
+          backgroundColor: '#ffffff',
+          logging: false,
+          windowWidth: 794,
+          // Important: html2canvas reads computed styles from the source element,
+          // not the cloned one. Forcing scrollY=0 helps avoid offset bugs.
+          scrollY: 0,
+          scrollX: 0
+        },
+        jsPDF:       { unit: 'pt', format: 'a4', orientation: 'portrait' },
+        pagebreak:   { mode: ['avoid-all', 'css', 'legacy'] }
+      };
+
+      // UI state
+      let originalLabel = null;
+      if (!silent && els.downloadPdf) {
+        originalLabel = els.downloadPdf.innerHTML;
+        els.downloadPdf.innerHTML = 'Generating PDF...';
+        els.downloadPdf.disabled = true;
+      }
+
+      try {
+        if (typeof html2pdf === 'undefined') {
+          throw new Error('html2pdf library is not loaded. Check the CDN script tag.');
+        }
+        console.log('[Axya quiz] Generating PDF...');
+        await html2pdf().set(pdfOpts).from(els.pdfTemplate).save();
+        console.log('[Axya quiz] PDF generated successfully.');
+      } catch (err) {
+        console.error('[Axya quiz] PDF generation failed:', err);
+        if (!silent) {
+          alert('Could not generate the PDF. Please try again, or check the browser console for details.');
+        }
+      } finally {
+        if (!silent && els.downloadPdf && originalLabel !== null) {
+          els.downloadPdf.innerHTML = originalLabel;
+          els.downloadPdf.disabled = false;
+        }
+      }
+    }
+
+    els.downloadPdf.addEventListener('click', () => generateAndDownloadPdf());
 
     function buildPdfTemplate() {
       const r = state.result;
