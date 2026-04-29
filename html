@@ -1,0 +1,1341 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Is Axya Right for Your Team?</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <!-- HubSpot Forms embed -->
+  <script charset="utf-8" type="text/javascript" src="https://js.hsforms.net/forms/embed/v2.js"></script>
+
+  <!-- html2pdf for the result download -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+  <style>
+    /* =========================================================
+       Theme tokens — pulled from Axya brand book
+       Primary navy #072b64 · Accent blue #2682fd
+       Soft blue   #f1f9ff · Deep navy   #081a33
+       ========================================================= */
+    :root {
+      --bg: #f1f9ff;             /* Brand: Secondary 1 — soft blue surface */
+      --surface: #ffffff;
+      --text: #081a33;           /* Brand: Secondary 2 — near-black navy */
+      --text-strong: #072b64;    /* Brand: Primary navy */
+      --text-muted: #4a5876;
+      --text-soft: #8693a8;
+      --border: #d6e3f0;
+      --border-strong: #b8cce0;
+      --accent: #2682fd;         /* Brand: Accent blue */
+      --accent-dark: #1d6cd9;
+      --accent-tint: #e7f1ff;
+      --danger: #DC4444;
+      --warning: #E89B2C;
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 20px;
+      --shadow-sm: 0 1px 2px rgba(7, 43, 100, 0.05);
+      --shadow-md: 0 4px 24px rgba(7, 43, 100, 0.07);
+      --shadow-lg: 0 12px 48px rgba(7, 43, 100, 0.10);
+      --font-sans: "Geist", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      --font-display: "Geist Mono", ui-monospace, "SF Mono", Menlo, monospace;
+      --transition: 240ms cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    *,
+    *::before,
+    *::after { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-sans);
+      font-size: 16px;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    button { font-family: inherit; cursor: pointer; }
+
+    /* =========================================================
+       Layout
+       ========================================================= */
+    .quiz {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 32px 20px 48px;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .quiz__header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+      margin-bottom: 36px;
+      min-height: 32px;
+    }
+
+    .brand {
+      font-family: var(--font-display);
+      font-weight: 600;
+      font-size: 18px;
+      letter-spacing: -0.02em;
+      color: var(--text-strong);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .brand__dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--accent);
+    }
+
+    .progress {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex: 1;
+      max-width: 280px;
+    }
+    .progress__track {
+      flex: 1;
+      height: 4px;
+      background: var(--border);
+      border-radius: 99px;
+      overflow: hidden;
+    }
+    .progress__bar {
+      height: 100%;
+      background: var(--accent);
+      border-radius: 99px;
+      width: 0%;
+      transition: width 400ms cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .progress__count {
+      font-variant-numeric: tabular-nums;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-muted);
+      letter-spacing: 0.02em;
+      min-width: 40px;
+      text-align: right;
+    }
+    .progress[hidden] { display: none; }
+
+    .quiz__body {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* =========================================================
+       Screens
+       ========================================================= */
+    .screen {
+      display: none;
+      animation: fadeIn 360ms cubic-bezier(0.22, 1, 0.36, 1) both;
+    }
+    .screen.is-active { display: block; }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ---------- Intro ---------- */
+    .intro__eyebrow {
+      display: inline-block;
+      font-family: var(--font-display);
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--accent-dark);
+      background: var(--accent-tint);
+      padding: 6px 12px;
+      border-radius: 99px;
+      margin-bottom: 24px;
+    }
+
+    .intro__title {
+      font-family: var(--font-display);
+      font-weight: 600;
+      font-size: clamp(32px, 4.8vw, 48px);
+      line-height: 1.05;
+      letter-spacing: -0.03em;
+      margin: 0 0 20px;
+      color: var(--text-strong);
+    }
+    .intro__title em {
+      font-style: italic;
+      font-weight: 600;
+      color: var(--accent);
+    }
+
+    .intro__lede {
+      font-size: 18px;
+      line-height: 1.55;
+      color: var(--text-muted);
+      margin: 0 0 32px;
+      max-width: 560px;
+    }
+
+    .intro__meta {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      margin-bottom: 36px;
+      flex-wrap: wrap;
+    }
+    .intro__meta-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+      color: var(--text-muted);
+    }
+    .intro__meta-item svg {
+      width: 18px;
+      height: 18px;
+      color: var(--accent);
+    }
+
+    /* ---------- Question ---------- */
+    .question__index {
+      font-family: var(--font-display);
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 16px;
+    }
+
+    .question__text {
+      font-family: var(--font-display);
+      font-weight: 600;
+      font-size: clamp(22px, 3vw, 30px);
+      line-height: 1.2;
+      letter-spacing: -0.02em;
+      margin: 0 0 36px;
+      color: var(--text-strong);
+    }
+
+    .options {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 40px;
+    }
+
+    .option {
+      appearance: none;
+      width: 100%;
+      text-align: left;
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 18px 20px;
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+      transition: all var(--transition);
+      color: var(--text);
+      font-size: 16px;
+      line-height: 1.45;
+    }
+    .option:hover {
+      border-color: var(--border-strong);
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-sm);
+    }
+    .option:focus-visible {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-tint);
+    }
+    .option.is-selected {
+      border-color: var(--accent);
+      background: var(--accent-tint);
+      box-shadow: var(--shadow-sm);
+    }
+    .option__letter {
+      flex-shrink: 0;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--bg);
+      border: 1.5px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-muted);
+      transition: all var(--transition);
+    }
+    .option.is-selected .option__letter {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: white;
+    }
+    .option__text { padding-top: 2px; }
+
+    /* ---------- Gate ---------- */
+    .gate__title {
+      font-family: var(--font-display);
+      font-weight: 600;
+      font-size: clamp(24px, 3vw, 32px);
+      line-height: 1.15;
+      letter-spacing: -0.02em;
+      margin: 0 0 12px;
+      color: var(--text-strong);
+    }
+    .gate__lede {
+      font-size: 16px;
+      color: var(--text-muted);
+      margin: 0 0 32px;
+      max-width: 520px;
+    }
+    .gate__form-wrap {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 32px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    /* HubSpot form skinning */
+    .gate__form-wrap form { font-family: var(--font-sans) !important; }
+    .gate__form-wrap .hs-form-field { margin-bottom: 16px !important; }
+    .gate__form-wrap .hs-form-field > label {
+      display: block !important;
+      font-size: 13px !important;
+      font-weight: 500 !important;
+      color: var(--text) !important;
+      margin-bottom: 6px !important;
+    }
+    .gate__form-wrap input[type="text"],
+    .gate__form-wrap input[type="email"],
+    .gate__form-wrap input[type="tel"],
+    .gate__form-wrap input[type="number"],
+    .gate__form-wrap select,
+    .gate__form-wrap textarea {
+      width: 100% !important;
+      padding: 12px 14px !important;
+      border: 1.5px solid var(--border) !important;
+      border-radius: var(--radius-sm) !important;
+      font-size: 15px !important;
+      font-family: var(--font-sans) !important;
+      color: var(--text) !important;
+      background: var(--bg) !important;
+      transition: border-color var(--transition), box-shadow var(--transition) !important;
+      box-sizing: border-box !important;
+    }
+    .gate__form-wrap input:focus,
+    .gate__form-wrap select:focus,
+    .gate__form-wrap textarea:focus {
+      outline: none !important;
+      border-color: var(--accent) !important;
+      box-shadow: 0 0 0 3px var(--accent-tint) !important;
+    }
+    .gate__form-wrap .hs-error-msgs {
+      list-style: none !important;
+      padding: 0 !important;
+      margin: 4px 0 0 !important;
+      color: var(--danger) !important;
+      font-size: 13px !important;
+    }
+    .gate__form-wrap .hs-button {
+      width: 100% !important;
+      padding: 14px 24px !important;
+      background: var(--accent) !important;
+      border: none !important;
+      border-radius: var(--radius-sm) !important;
+      color: white !important;
+      font-size: 15px !important;
+      font-weight: 500 !important;
+      font-family: var(--font-sans) !important;
+      cursor: pointer !important;
+      transition: background var(--transition) !important;
+      margin-top: 8px !important;
+    }
+    .gate__form-wrap .hs-button:hover { background: var(--accent-dark) !important; }
+    .gate__form-wrap .legal-consent-container,
+    .gate__form-wrap .hs-richtext {
+      font-size: 12px !important;
+      color: var(--text-muted) !important;
+      line-height: 1.45 !important;
+    }
+    .gate__form-wrap .hs-richtext p { margin: 8px 0 !important; }
+
+    .gate__fallback {
+      padding: 20px;
+      background: var(--accent-tint);
+      border-radius: var(--radius-md);
+      color: var(--text);
+      font-size: 14px;
+      margin-bottom: 20px;
+    }
+    .gate__fallback strong { display: block; margin-bottom: 4px; }
+
+    /* ---------- Results ---------- */
+    .result__badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--font-display);
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 6px 12px;
+      border-radius: 99px;
+      margin-bottom: 20px;
+    }
+    .result__badge--A { background: #fff1ed; color: #c04a1f; }
+    .result__badge--B { background: #fff8e0; color: #8c6900; }
+    .result__badge--C { background: var(--accent-tint); color: var(--accent-dark); }
+
+    .result__title {
+      font-family: var(--font-display);
+      font-weight: 600;
+      font-size: clamp(32px, 4.5vw, 44px);
+      line-height: 1.05;
+      letter-spacing: -0.03em;
+      margin: 0 0 20px;
+      color: var(--text-strong);
+    }
+
+    .result__description {
+      font-size: 17px;
+      line-height: 1.55;
+      color: var(--text-muted);
+      margin: 0 0 28px;
+      max-width: 600px;
+    }
+
+    .result__callout {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--accent);
+      border-radius: var(--radius-md);
+      padding: 20px 24px;
+      margin-bottom: 32px;
+    }
+    .result__callout-label {
+      font-family: var(--font-display);
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 6px;
+    }
+    .result__callout-text {
+      font-size: 16px;
+      line-height: 1.5;
+      color: var(--text);
+      margin: 0;
+    }
+
+    .result__breakdown {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 20px 24px;
+      margin-bottom: 32px;
+    }
+    .result__breakdown-title {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text);
+      margin: 0 0 12px;
+    }
+    .result__bars {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .result__bar-row {
+      display: grid;
+      grid-template-columns: 80px 1fr 32px;
+      gap: 12px;
+      align-items: center;
+      font-size: 13px;
+    }
+    .result__bar-label { color: var(--text-muted); }
+    .result__bar-track {
+      height: 6px;
+      background: var(--bg);
+      border-radius: 99px;
+      overflow: hidden;
+    }
+    .result__bar-fill {
+      height: 100%;
+      background: var(--border-strong);
+      border-radius: 99px;
+      transition: width 800ms cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .result__bar-row.is-winner .result__bar-fill { background: var(--accent); }
+    .result__bar-row.is-winner .result__bar-label,
+    .result__bar-row.is-winner .result__bar-count { color: var(--text); font-weight: 500; }
+    .result__bar-count {
+      font-variant-numeric: tabular-nums;
+      color: var(--text-muted);
+      text-align: right;
+    }
+
+    .result__cta-row {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    /* =========================================================
+       Buttons + nav
+       ========================================================= */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 13px 22px;
+      border-radius: var(--radius-sm);
+      font-family: var(--font-sans);
+      font-size: 15px;
+      font-weight: 500;
+      line-height: 1;
+      border: 1.5px solid transparent;
+      cursor: pointer;
+      transition: all var(--transition);
+      text-decoration: none;
+      white-space: nowrap;
+    }
+    .btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+    .btn--primary {
+      background: var(--accent);
+      color: white;
+    }
+    .btn--primary:hover:not(:disabled) {
+      background: var(--accent-dark);
+      transform: translateY(-1px);
+    }
+    .btn--secondary {
+      background: var(--surface);
+      color: var(--text);
+      border-color: var(--border);
+    }
+    .btn--secondary:hover:not(:disabled) {
+      border-color: var(--text);
+    }
+    .btn--ghost {
+      background: transparent;
+      color: var(--text-muted);
+      padding: 13px 14px;
+    }
+    .btn--ghost:hover:not(:disabled) {
+      color: var(--text);
+    }
+    .btn--lg {
+      padding: 16px 28px;
+      font-size: 16px;
+    }
+
+    .nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 32px;
+      padding-top: 24px;
+      border-top: 1px solid var(--border);
+    }
+    .nav[hidden] { display: none; }
+    .nav__spacer { width: 1px; }
+
+    /* =========================================================
+       PDF template (off-screen, used to render the download)
+       ========================================================= */
+    .pdf-template {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      width: 794px;          /* A4 @ 96dpi */
+      padding: 56px 64px;
+      background: white;
+      color: var(--text);
+      font-family: var(--font-sans);
+      box-sizing: border-box;
+    }
+    .pdf-template * { box-sizing: border-box; }
+    .pdf__header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 24px;
+      border-bottom: 2px solid var(--text-strong);
+      margin-bottom: 36px;
+    }
+    .pdf__brand {
+      font-family: var(--font-display);
+      font-weight: 600;
+      font-size: 22px;
+      letter-spacing: -0.02em;
+      color: var(--text-strong);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .pdf__brand-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--accent);
+    }
+    .pdf__date {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+    .pdf__eyebrow {
+      font-family: var(--font-display);
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 12px;
+    }
+    .pdf__title {
+      font-family: var(--font-display);
+      font-weight: 600;
+      font-size: 38px;
+      line-height: 1.05;
+      letter-spacing: -0.03em;
+      margin: 0 0 20px;
+      color: var(--text-strong);
+    }
+    .pdf__lede {
+      font-size: 16px;
+      line-height: 1.55;
+      color: var(--text-muted);
+      margin: 0 0 32px;
+    }
+    .pdf__section {
+      margin-bottom: 28px;
+    }
+    .pdf__section-title {
+      font-family: var(--font-display);
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-soft);
+      margin: 0 0 12px;
+    }
+    .pdf__callout {
+      padding: 20px 24px;
+      background: var(--accent-tint);
+      border-left: 3px solid var(--accent);
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      font-size: 15px;
+      line-height: 1.5;
+    }
+    .pdf__answers {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    .pdf__answer {
+      padding: 14px 0;
+      border-bottom: 1px solid var(--border);
+      display: grid;
+      grid-template-columns: 24px 1fr;
+      gap: 16px;
+      font-size: 13px;
+      line-height: 1.45;
+    }
+    .pdf__answer:last-child { border-bottom: none; }
+    .pdf__answer-num {
+      font-variant-numeric: tabular-nums;
+      color: var(--text-soft);
+      font-weight: 500;
+    }
+    .pdf__answer-q {
+      color: var(--text);
+      font-weight: 500;
+      margin-bottom: 4px;
+    }
+    .pdf__answer-a { color: var(--text-muted); }
+    .pdf__cta {
+      margin-top: 36px;
+      padding: 24px;
+      background: var(--text-strong);
+      color: white;
+      border-radius: var(--radius-md);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+    }
+    .pdf__cta-text {
+      flex: 1;
+    }
+    .pdf__cta-title {
+      font-family: var(--font-display);
+      font-weight: 600;
+      font-size: 20px;
+      line-height: 1.15;
+      letter-spacing: -0.02em;
+      margin: 0 0 4px;
+    }
+    .pdf__cta-sub {
+      font-size: 14px;
+      opacity: 0.7;
+      margin: 0;
+    }
+    .pdf__cta-btn {
+      background: var(--accent);
+      color: white;
+      padding: 12px 20px;
+      border-radius: var(--radius-sm);
+      font-weight: 500;
+      font-size: 14px;
+      white-space: nowrap;
+    }
+    .pdf__footer {
+      margin-top: 36px;
+      padding-top: 20px;
+      border-top: 1px solid var(--border);
+      font-size: 11px;
+      color: var(--text-soft);
+      display: flex;
+      justify-content: space-between;
+    }
+
+    /* =========================================================
+       Responsive
+       ========================================================= */
+    @media (max-width: 520px) {
+      .quiz { padding: 20px 16px 32px; }
+      .quiz__header { flex-direction: column; align-items: flex-start; gap: 16px; margin-bottom: 28px; }
+      .progress { width: 100%; max-width: none; }
+      .gate__form-wrap { padding: 24px 20px; }
+      .result__cta-row { flex-direction: column; }
+      .result__cta-row .btn { width: 100%; }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="quiz" id="quiz">
+
+    <!-- ============== HEADER ============== -->
+    <header class="quiz__header">
+      <div class="brand">
+        <span class="brand__dot"></span>
+        <span>Axya</span>
+      </div>
+      <div class="progress" id="progress" hidden>
+        <div class="progress__track"><div class="progress__bar" id="progressBar"></div></div>
+        <div class="progress__count" id="progressCount">1 / 5</div>
+      </div>
+    </header>
+
+    <!-- ============== BODY ============== -->
+    <main class="quiz__body">
+
+      <!-- INTRO -->
+      <section class="screen is-active" data-screen="intro">
+        <div class="intro__eyebrow">2-minute self-assessment</div>
+        <h1 class="intro__title">Is Axya right for <em>your team</em>?</h1>
+        <p class="intro__lede">
+          Five quick questions about how your team manages suppliers today. We'll show you where you stand —
+          and what's possible if you tighten things up.
+        </p>
+        <div class="intro__meta">
+          <div class="intro__meta-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+            <span>5 questions, ~2 min</span>
+          </div>
+          <div class="intro__meta-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="10"/></svg>
+            <span>Instant personalized result</span>
+          </div>
+        </div>
+        <button class="btn btn--primary btn--lg" data-action="start">
+          Start the quiz
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+        </button>
+      </section>
+
+      <!-- QUESTION (rendered dynamically) -->
+      <section class="screen" data-screen="question">
+        <div class="question__index" id="qIndex">Question 1 of 5</div>
+        <h2 class="question__text" id="qText"></h2>
+        <div class="options" id="qOptions" role="radiogroup" aria-labelledby="qText"></div>
+      </section>
+
+      <!-- GATE (email form) -->
+      <section class="screen" data-screen="gate">
+        <h2 class="gate__title">One last step.</h2>
+        <p class="gate__lede">
+          Enter your email and we'll show you your result — plus a tailored snapshot you can download
+          and share with your team.
+        </p>
+        <div class="gate__form-wrap">
+          <div id="hubspot-form-target"></div>
+          <div id="hubspot-form-fallback" class="gate__fallback" hidden>
+            <strong>Form not configured.</strong>
+            Update <code>HUBSPOT_PORTAL_ID</code> and <code>HUBSPOT_FORM_ID</code> in this file.
+            Showing results without capture for now.
+            <div style="margin-top:12px"><button class="btn btn--primary" id="skipGate">Show me my result →</button></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- RESULTS -->
+      <section class="screen" data-screen="results">
+        <div class="result__badge" id="resultBadge"></div>
+        <h2 class="result__title" id="resultTitle"></h2>
+        <p class="result__description" id="resultDescription"></p>
+
+        <div class="result__callout">
+          <div class="result__callout-label">What this means</div>
+          <p class="result__callout-text" id="resultMeaning"></p>
+        </div>
+
+        <div class="result__breakdown">
+          <h3 class="result__breakdown-title">Your answer pattern</h3>
+          <div class="result__bars" id="resultBars"></div>
+        </div>
+
+        <div class="result__cta-row">
+          <a class="btn btn--primary btn--lg" id="ctaDemo" href="#" target="_blank" rel="noopener">
+            Book a demo
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+          </a>
+          <button class="btn btn--secondary btn--lg" id="downloadPdf">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12m0 0l-4-4m4 4l4-4M5 21h14"/></svg>
+            Download my snapshot
+          </button>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- ============== NAV ============== -->
+    <nav class="nav" id="nav" hidden>
+      <button class="btn btn--ghost" id="backBtn">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M11 19l-7-7 7-7"/></svg>
+        Back
+      </button>
+      <div class="nav__spacer"></div>
+      <button class="btn btn--primary" id="nextBtn" disabled>
+        Next
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+      </button>
+    </nav>
+
+  </div>
+
+  <!-- ============== PDF TEMPLATE (hidden, used for download) ============== -->
+  <div class="pdf-template" id="pdfTemplate" aria-hidden="true"></div>
+
+
+  <script>
+    /* =========================================================
+       CONFIGURATION
+       =========================================================
+       Two things to swap before going live:
+       1. DEMO_URL          — where the "Book a demo" button goes
+       2. (optional) The HUBSPOT_HIDDEN_FIELDS internal names if
+          you renamed them in HubSpot.
+
+       The HubSpot form is already wired up. To send the quiz
+       answers via email after submission, set up a HubSpot Workflow:
+         Trigger: Form submission on this form
+         Action:  Send marketing email — use personalization tokens
+                  {{ contact.quiz_result }}, {{ contact.quiz_answers }} etc.
+       ========================================================= */
+    const HUBSPOT_PORTAL_ID = "5408365";                                       // Axya portal
+    const HUBSPOT_FORM_ID   = "cc6cdd8e-265a-4317-837e-b4983019bc1e";           // Quiz form GUID
+    const HUBSPOT_REGION    = "na1";
+    const DEMO_URL          = "https://axya.co/demo";                          // ⬅️ update to actual demo URL
+
+    // OPTIONAL: hidden HubSpot contact properties to track quiz
+    // outcomes on the contact record. Add these fields to the
+    // HubSpot form in Edit > Form > Add fields. If they don't exist,
+    // they'll just be ignored.
+    const HUBSPOT_HIDDEN_FIELDS = {
+      result:    "quiz_result",        // text — e.g. "Fire-drill mode"
+      countA:    "quiz_score_a",       // number — count of A answers
+      countB:    "quiz_score_b",
+      countC:    "quiz_score_c",
+      answers:   "quiz_answers"        // text — e.g. "A,B,A,C,B"
+    };
+
+    /* =========================================================
+       QUIZ CONTENT (from the doc)
+       ========================================================= */
+    const QUIZ = [
+      {
+        q: "How does your team currently manage supplier communication?",
+        opts: [
+          { letter: "A", text: "Mostly in email threads and inboxes" },
+          { letter: "B", text: "A mix of email, spreadsheets, and some tools" },
+          { letter: "C", text: "Centralized in one system with structured updates" }
+        ]
+      },
+      {
+        q: "When something changes (ETA, quantity, delays), how quickly does your team know?",
+        opts: [
+          { letter: "A", text: "We usually find out late or have to chase updates" },
+          { letter: "B", text: "We find out eventually, but it's manual" },
+          { letter: "C", text: "It's tracked and updated automatically in real time" }
+        ]
+      },
+      {
+        q: "How much time do buyers in your team spend on follow-ups and manual updates each week?",
+        opts: [
+          { letter: "A", text: "5+ hours chasing suppliers and updating systems" },
+          { letter: "B", text: "2 to 5 hours" },
+          { letter: "C", text: "Minimal — it's mostly automated" }
+        ]
+      },
+      {
+        q: "Where does your procurement data live today?",
+        opts: [
+          { letter: "A", text: "Scattered across emails, ERP, Excel, and portals" },
+          { letter: "B", text: "Mostly in ERP, but not fully reliable" },
+          { letter: "C", text: "Clean, centralized, and trusted" }
+        ]
+      },
+      {
+        q: "How often do issues impact production before being caught?",
+        opts: [
+          { letter: "A", text: "Regularly — we're reacting more than anticipating" },
+          { letter: "B", text: "Occasionally" },
+          { letter: "C", text: "Rarely — we catch issues early" }
+        ]
+      }
+    ];
+
+    const RESULTS = {
+      A: {
+        badge: "High urgency · Strong fit",
+        badgeClass: "result__badge--A",
+        title: "You're in fire-drill mode.",
+        description: "Your team is likely reacting to supplier issues instead of anticipating them. Information is fragmented, and buyers are spending significant time chasing updates.",
+        meaning: "There's a strong opportunity to centralize communication, reduce manual work, and prevent issues earlier — before they hit production."
+      },
+      B: {
+        badge: "Visibility gaps · Good fit",
+        badgeClass: "result__badge--B",
+        title: "You have visibility gaps.",
+        description: "You've started structuring your processes, but key information is still manual and unreliable. The foundation is there — the orchestration isn't.",
+        meaning: "With better integration and real-time updates, your team could unlock meaningful time savings and improve decision-making across the board."
+      },
+      C: {
+        badge: "Already structured · Optimization angle",
+        badgeClass: "result__badge--C",
+        title: "You're already structured.",
+        description: "Your processes are solid and relatively centralized. The fundamentals are in place.",
+        meaning: "Axya could still help by automating supplier collaboration further and improving data reliability across systems — turning a good operation into a great one."
+      }
+    };
+
+    /* =========================================================
+       STATE
+       ========================================================= */
+    const state = {
+      screen: "intro",   // intro | question | gate | results
+      qIndex: 0,
+      answers: Array(QUIZ.length).fill(null),
+      result: null
+    };
+
+    /* =========================================================
+       DOM
+       ========================================================= */
+    const $ = sel => document.querySelector(sel);
+    const $$ = sel => Array.from(document.querySelectorAll(sel));
+
+    const screens = {
+      intro:    $('[data-screen="intro"]'),
+      question: $('[data-screen="question"]'),
+      gate:     $('[data-screen="gate"]'),
+      results:  $('[data-screen="results"]')
+    };
+
+    const els = {
+      progress:      $('#progress'),
+      progressBar:   $('#progressBar'),
+      progressCount: $('#progressCount'),
+      qIndex:        $('#qIndex'),
+      qText:         $('#qText'),
+      qOptions:      $('#qOptions'),
+      nav:           $('#nav'),
+      backBtn:       $('#backBtn'),
+      nextBtn:       $('#nextBtn'),
+      hsTarget:      $('#hubspot-form-target'),
+      hsFallback:    $('#hubspot-form-fallback'),
+      skipGate:      $('#skipGate'),
+      resultBadge:   $('#resultBadge'),
+      resultTitle:   $('#resultTitle'),
+      resultDesc:    $('#resultDescription'),
+      resultMeaning: $('#resultMeaning'),
+      resultBars:    $('#resultBars'),
+      ctaDemo:       $('#ctaDemo'),
+      downloadPdf:   $('#downloadPdf'),
+      pdfTemplate:   $('#pdfTemplate')
+    };
+
+    /* =========================================================
+       NAVIGATION
+       ========================================================= */
+    function go(screen, opts = {}) {
+      state.screen = screen;
+      Object.values(screens).forEach(s => s.classList.remove('is-active'));
+      screens[screen].classList.add('is-active');
+
+      if (screen === 'question') renderQuestion();
+      if (screen === 'gate')     renderGate();
+      if (screen === 'results')  renderResults();
+
+      updateChrome();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      postHeight();
+    }
+
+    function updateChrome() {
+      // Progress bar — only on questions (and slightly on intro/gate as anchors)
+      if (state.screen === 'question') {
+        const pct = ((state.qIndex + 1) / QUIZ.length) * 100;
+        els.progress.hidden = false;
+        els.progressBar.style.width = `${pct}%`;
+        els.progressCount.textContent = `${state.qIndex + 1} / ${QUIZ.length}`;
+      } else if (state.screen === 'gate') {
+        els.progress.hidden = false;
+        els.progressBar.style.width = '100%';
+        els.progressCount.textContent = `${QUIZ.length} / ${QUIZ.length}`;
+      } else {
+        els.progress.hidden = true;
+      }
+
+      // Nav — show on questions only (intro has its own CTA, gate has form, results has CTAs)
+      if (state.screen === 'question') {
+        els.nav.hidden = false;
+        els.backBtn.style.visibility = 'visible';
+        els.nextBtn.disabled = state.answers[state.qIndex] === null;
+        // last question: change "Next" label to "See my result"
+        const isLast = state.qIndex === QUIZ.length - 1;
+        const nextLabel = els.nextBtn.childNodes[0];
+        if (nextLabel && nextLabel.nodeType === 3) {
+          nextLabel.textContent = isLast ? 'See my result ' : 'Next ';
+        }
+      } else {
+        els.nav.hidden = true;
+      }
+    }
+
+    /* =========================================================
+       QUESTION RENDER
+       ========================================================= */
+    function renderQuestion() {
+      const q = QUIZ[state.qIndex];
+      els.qIndex.textContent = `Question ${state.qIndex + 1} of ${QUIZ.length}`;
+      els.qText.textContent = q.q;
+      els.qOptions.innerHTML = '';
+      q.opts.forEach(opt => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'option';
+        btn.setAttribute('role', 'radio');
+        btn.setAttribute('aria-checked', state.answers[state.qIndex] === opt.letter ? 'true' : 'false');
+        if (state.answers[state.qIndex] === opt.letter) btn.classList.add('is-selected');
+        btn.innerHTML = `
+          <span class="option__letter">${opt.letter}</span>
+          <span class="option__text">${opt.text}</span>
+        `;
+        btn.addEventListener('click', () => selectOption(opt.letter));
+        els.qOptions.appendChild(btn);
+      });
+    }
+
+    function selectOption(letter) {
+      state.answers[state.qIndex] = letter;
+      // Update UI immediately
+      $$('.option').forEach(o => {
+        const isSel = o.querySelector('.option__letter').textContent === letter;
+        o.classList.toggle('is-selected', isSel);
+        o.setAttribute('aria-checked', isSel ? 'true' : 'false');
+      });
+      els.nextBtn.disabled = false;
+    }
+
+    /* =========================================================
+       NAV BUTTONS
+       ========================================================= */
+    document.addEventListener('click', e => {
+      const action = e.target.closest('[data-action]')?.dataset.action;
+      if (action === 'start') go('question');
+    });
+
+    els.backBtn.addEventListener('click', () => {
+      if (state.screen === 'question') {
+        if (state.qIndex === 0) go('intro');
+        else { state.qIndex--; go('question'); }
+      } else if (state.screen === 'gate') {
+        state.qIndex = QUIZ.length - 1;
+        go('question');
+      }
+    });
+
+    els.nextBtn.addEventListener('click', () => {
+      if (state.answers[state.qIndex] === null) return;
+      if (state.qIndex < QUIZ.length - 1) {
+        state.qIndex++;
+        go('question');
+      } else {
+        // Move to gate
+        computeResult();
+        go('gate');
+      }
+    });
+
+    /* =========================================================
+       RESULT COMPUTATION
+       ========================================================= */
+    function computeResult() {
+      const counts = { A: 0, B: 0, C: 0 };
+      state.answers.forEach(a => { if (a) counts[a]++; });
+      // Tie-breaking: A > B > C (more pain wins) — surfaces the higher-fit message
+      let winner = 'C';
+      if (counts.A >= counts.B && counts.A >= counts.C) winner = 'A';
+      else if (counts.B >= counts.C) winner = 'B';
+      state.result = { letter: winner, counts };
+    }
+
+    /* =========================================================
+       GATE — HubSpot form + fallback
+       ========================================================= */
+    function renderGate() {
+      // Only build once
+      if (els.hsTarget.dataset.built) return;
+      els.hsTarget.dataset.built = '1';
+
+      if (!HUBSPOT_FORM_ID || HUBSPOT_FORM_ID.length < 10) {
+        showFallback();
+        return;
+      }
+
+      if (typeof hbspt === 'undefined' || !hbspt.forms) {
+        // Script blocked or still loading — wait briefly, then fallback
+        const waitUntil = Date.now() + 4000;
+        const tryLoad = () => {
+          if (typeof hbspt !== 'undefined' && hbspt.forms) return buildHubSpotForm();
+          if (Date.now() > waitUntil) return showFallback();
+          setTimeout(tryLoad, 200);
+        };
+        tryLoad();
+      } else {
+        buildHubSpotForm();
+      }
+    }
+
+    function buildHubSpotForm() {
+      hbspt.forms.create({
+        portalId: HUBSPOT_PORTAL_ID,
+        formId: HUBSPOT_FORM_ID,
+        region: HUBSPOT_REGION,
+        target: '#hubspot-form-target',
+        onFormReady: function (form) {
+          // Pre-fill hidden quiz tracking fields, if they exist on the form
+          const root = (form && form.length) ? form[0] : (form || els.hsTarget);
+          const setHidden = (name, value) => {
+            const input = root.querySelector(`input[name="${name}"]`);
+            if (!input) return;
+            input.value = value;
+            input.dispatchEvent(new Event('input',  { bubbles: true }));
+            input.dispatchEvent(new Event('change', { bubbles: true }));
+          };
+          const r = state.result;
+          setHidden(HUBSPOT_HIDDEN_FIELDS.result,  RESULTS[r.letter].title.replace(/\.$/, ''));
+          setHidden(HUBSPOT_HIDDEN_FIELDS.countA,  r.counts.A);
+          setHidden(HUBSPOT_HIDDEN_FIELDS.countB,  r.counts.B);
+          setHidden(HUBSPOT_HIDDEN_FIELDS.countC,  r.counts.C);
+          setHidden(HUBSPOT_HIDDEN_FIELDS.answers, state.answers.join(','));
+          postHeight();
+        },
+        onFormSubmitted: function () {
+          // Small delay so HubSpot finishes its own redirect/thank-you logic
+          setTimeout(() => go('results'), 200);
+        }
+      });
+    }
+
+    function showFallback() {
+      els.hsTarget.style.display = 'none';
+      els.hsFallback.hidden = false;
+    }
+
+    els.skipGate.addEventListener('click', () => go('results'));
+
+    /* =========================================================
+       RESULTS
+       ========================================================= */
+    function renderResults() {
+      const r = state.result;
+      const data = RESULTS[r.letter];
+      els.resultBadge.textContent = data.badge;
+      els.resultBadge.className = `result__badge ${data.badgeClass}`;
+      els.resultTitle.textContent = data.title;
+      els.resultDesc.textContent = data.description;
+      els.resultMeaning.textContent = data.meaning;
+      els.ctaDemo.href = DEMO_URL;
+
+      // Bars
+      els.resultBars.innerHTML = '';
+      ['A', 'B', 'C'].forEach(l => {
+        const labels = { A: 'Mostly A', B: 'Mostly B', C: 'Mostly C' };
+        const count = r.counts[l];
+        const pct = QUIZ.length ? (count / QUIZ.length) * 100 : 0;
+        const row = document.createElement('div');
+        row.className = 'result__bar-row' + (l === r.letter ? ' is-winner' : '');
+        row.innerHTML = `
+          <div class="result__bar-label">${labels[l]}</div>
+          <div class="result__bar-track"><div class="result__bar-fill" style="width:0"></div></div>
+          <div class="result__bar-count">${count}</div>
+        `;
+        els.resultBars.appendChild(row);
+        // Animate bars in
+        requestAnimationFrame(() => {
+          row.querySelector('.result__bar-fill').style.width = `${pct}%`;
+        });
+      });
+    }
+
+    /* =========================================================
+       PDF DOWNLOAD
+       ========================================================= */
+    els.downloadPdf.addEventListener('click', async () => {
+      buildPdfTemplate();
+      const opt = {
+        margin:       0,
+        filename:     'axya-quiz-snapshot.pdf',
+        image:        { type: 'jpeg', quality: 0.98 },
+        html2canvas:  { scale: 2, useCORS: true, backgroundColor: '#ffffff' },
+        jsPDF:        { unit: 'pt', format: 'a4', orientation: 'portrait' },
+        pagebreak:    { mode: ['avoid-all', 'css', 'legacy'] }
+      };
+      const original = els.downloadPdf.innerHTML;
+      els.downloadPdf.innerHTML = 'Generating...';
+      els.downloadPdf.disabled = true;
+      try {
+        await html2pdf().set(opt).from(els.pdfTemplate).save();
+      } catch (err) {
+        console.error('PDF generation failed', err);
+      } finally {
+        els.downloadPdf.innerHTML = original;
+        els.downloadPdf.disabled = false;
+      }
+    });
+
+    function buildPdfTemplate() {
+      const r = state.result;
+      const data = RESULTS[r.letter];
+      const date = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+
+      const answersHtml = QUIZ.map((q, i) => {
+        const letter = state.answers[i];
+        const opt = q.opts.find(o => o.letter === letter);
+        return `
+          <li class="pdf__answer">
+            <div class="pdf__answer-num">${i + 1}.</div>
+            <div>
+              <div class="pdf__answer-q">${q.q}</div>
+              <div class="pdf__answer-a">${letter ? letter + '. ' + opt.text : '—'}</div>
+            </div>
+          </li>
+        `;
+      }).join('');
+
+      els.pdfTemplate.innerHTML = `
+        <div class="pdf__header">
+          <div class="pdf__brand"><span class="pdf__brand-dot"></span><span>Axya</span></div>
+          <div class="pdf__date">${date}</div>
+        </div>
+
+        <div class="pdf__eyebrow">Your supplier-management snapshot</div>
+        <h1 class="pdf__title">${data.title}</h1>
+        <p class="pdf__lede">${data.description}</p>
+
+        <div class="pdf__section">
+          <div class="pdf__section-title">What this means</div>
+          <div class="pdf__callout">${data.meaning}</div>
+        </div>
+
+        <div class="pdf__section">
+          <div class="pdf__section-title">Your answers</div>
+          <ul class="pdf__answers">${answersHtml}</ul>
+        </div>
+
+        <div class="pdf__cta">
+          <div class="pdf__cta-text">
+            <p class="pdf__cta-title">Ready to see Axya in action?</p>
+            <p class="pdf__cta-sub">Get a 30-minute walkthrough tailored to your team.</p>
+          </div>
+          <div class="pdf__cta-btn">Book a demo →</div>
+        </div>
+
+        <div class="pdf__footer">
+          <span>axya.co</span>
+          <span>Generated ${date}</span>
+        </div>
+      `;
+    }
+
+    /* =========================================================
+       Iframe auto-resize — tells the parent page how tall we are
+       so the iframe can grow/shrink with the current screen.
+
+       On the parent site (axya.co), add this once:
+         window.addEventListener('message', e => {
+           if (e.data && e.data.type === 'axya-quiz-height') {
+             document.getElementById('axya-quiz-iframe').style.height = e.data.height + 'px';
+           }
+         });
+       ========================================================= */
+    function postHeight() {
+      if (window.parent === window) return;
+      const h = document.documentElement.scrollHeight;
+      window.parent.postMessage({ type: 'axya-quiz-height', height: h }, '*');
+    }
+    window.addEventListener('load', postHeight);
+    new ResizeObserver(postHeight).observe(document.body);
+
+    /* =========================================================
+       INIT
+       ========================================================= */
+    updateChrome();
+  </script>
+
+</body>
+</html>
