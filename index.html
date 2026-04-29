@@ -13,9 +13,6 @@
   <!-- HubSpot Forms embed -->
   <script charset="utf-8" type="text/javascript" src="https://js.hsforms.net/forms/embed/v2.js"></script>
 
-  <!-- html2pdf for the result download -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-
   <style>
     /* =========================================================
        Theme tokens — pulled from Axya brand book
@@ -570,282 +567,176 @@
     .nav__spacer { width: 1px; }
 
     /* =========================================================
-       PDF template (off-screen, used to render the download)
-       Note: hardcoded hex (no CSS vars) — html2canvas does not
-       reliably resolve CSS custom properties in its clone.
+       Answer detail (shown on screen after results)
        ========================================================= */
-    .pdf-template {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 794px;          /* A4 @ 96dpi */
-      padding: 48px 56px;
-      background: #ffffff;
-      color: #081a33;
-      font-family: "Geist", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      box-sizing: border-box;
-      transform: translateY(-200vh);
-      pointer-events: none;
-      z-index: -1;
+    .result__answers {
+      margin-bottom: 32px;
     }
-    .pdf-template * { box-sizing: border-box; }
-
-    /* Header / brand row */
-    .pdf__header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding-bottom: 18px;
-      border-bottom: 2px solid #072b64;
-      margin-bottom: 28px;
-    }
-    .pdf__brand {
-      font-family: "Geist Mono", ui-monospace, "SF Mono", Menlo, monospace;
-      font-weight: 600;
-      font-size: 20px;
-      letter-spacing: -0.02em;
-      color: #072b64;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-    .pdf__brand-dot {
-      width: 9px;
-      height: 9px;
-      border-radius: 50%;
-      background: #2682fd;
-    }
-    .pdf__date {
-      font-size: 12px;
-      color: #4a5876;
-      font-variant-numeric: tabular-nums;
-    }
-
-    /* Result hero */
-    .pdf__eyebrow {
-      font-family: "Geist Mono", ui-monospace, monospace;
-      font-size: 10px;
+    .result__answers-title {
+      font-size: 14px;
       font-weight: 500;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: #2682fd;
-      margin-bottom: 10px;
+      color: var(--text-strong);
+      margin: 0 0 6px;
     }
-    .pdf__title {
-      font-family: "Geist Mono", ui-monospace, monospace;
-      font-weight: 600;
-      font-size: 32px;
-      line-height: 1.05;
-      letter-spacing: -0.03em;
-      margin: 0 0 14px;
-      color: #072b64;
+    .result__answers-lede {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin: 0 0 16px;
     }
-    .pdf__title--small {
-      font-size: 22px;
-      margin-bottom: 10px;
-    }
-    .pdf__lede {
-      font-size: 14px;
-      line-height: 1.55;
-      color: #4a5876;
-      margin: 0 0 24px;
-    }
-
-    /* Generic section + section title */
-    .pdf__section {
-      margin-bottom: 22px;
-    }
-    .pdf__section-title {
-      font-family: "Geist Mono", ui-monospace, monospace;
-      font-size: 10px;
-      font-weight: 600;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: #8693a8;
-      margin: 0 0 10px;
-    }
-
-    /* "What this means" callout */
-    .pdf__callout {
-      padding: 16px 20px;
-      background: #e7f1ff;
-      border-left: 3px solid #2682fd;
-      border-radius: 0 8px 8px 0;
-      font-size: 14px;
-      line-height: 1.5;
-      color: #081a33;
-    }
-
-    /* Score breakdown bars */
-    .pdf__score-bars {
+    .result__qa-list {
       display: flex;
       flex-direction: column;
-      gap: 8px;
-      padding: 18px 20px;
-      background: #f1f9ff;
-      border-radius: 8px;
-    }
-    .pdf__score-row {
-      display: grid;
-      grid-template-columns: 90px 1fr 28px;
       gap: 12px;
-      align-items: center;
-      font-size: 13px;
     }
-    .pdf__score-label { color: #4a5876; }
-    .pdf__score-track {
-      height: 8px;
-      background: #ffffff;
-      border-radius: 99px;
-      overflow: hidden;
+    .result__qa {
+      padding: 16px 20px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
     }
-    .pdf__score-fill {
-      height: 100%;
-      background: #b8cce0;
-      border-radius: 99px;
-    }
-    .pdf__score-row.is-winner .pdf__score-fill { background: #2682fd; }
-    .pdf__score-row.is-winner .pdf__score-label { color: #072b64; font-weight: 600; }
-    .pdf__score-count {
-      text-align: right;
-      font-variant-numeric: tabular-nums;
-      color: #4a5876;
-      font-weight: 500;
-    }
-    .pdf__score-row.is-winner .pdf__score-count { color: #072b64; font-weight: 600; }
-
-    /* Q&A detail blocks (page 2) */
-    .pdf__qa {
-      margin-bottom: 18px;
-      page-break-inside: avoid;
-      break-inside: avoid;
-    }
-    .pdf__qa-header {
+    .result__qa-header {
       display: flex;
       align-items: flex-start;
       gap: 10px;
-      margin-bottom: 8px;
+      margin-bottom: 10px;
     }
-    .pdf__qa-num {
-      font-family: "Geist Mono", ui-monospace, monospace;
-      font-size: 10px;
+    .result__qa-num {
+      font-family: var(--font-display);
+      font-size: 11px;
       font-weight: 600;
       letter-spacing: 0.04em;
-      color: #2682fd;
-      background: #e7f1ff;
+      color: var(--accent);
+      background: var(--accent-tint);
       padding: 4px 8px;
       border-radius: 4px;
       flex-shrink: 0;
       line-height: 1.2;
     }
-    .pdf__qa-question {
-      font-size: 13px;
-      font-weight: 600;
-      color: #072b64;
-      line-height: 1.35;
-      margin: 2px 0 0;
+    .result__qa-question {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text-strong);
+      line-height: 1.4;
+      margin: 1px 0 0;
     }
-    .pdf__qa-options {
+    .result__qa-options {
       list-style: none;
       padding: 0;
-      margin: 0 0 0 36px;
+      margin: 0 0 0 38px;
       display: flex;
       flex-direction: column;
-      gap: 3px;
+      gap: 4px;
     }
-    .pdf__qa-option {
+    .result__qa-option {
       display: flex;
       align-items: center;
       gap: 10px;
-      padding: 7px 10px;
-      border-radius: 5px;
-      font-size: 11.5px;
+      padding: 9px 12px;
+      border-radius: 6px;
+      font-size: 13px;
       line-height: 1.4;
-      color: #4a5876;
+      color: var(--text-muted);
       border: 1px solid transparent;
     }
-    .pdf__qa-option.is-selected {
-      background: #e7f1ff;
-      border-color: #2682fd;
-      color: #072b64;
+    .result__qa-option.is-selected {
+      background: var(--accent-tint);
+      border-color: var(--accent);
+      color: var(--text-strong);
       font-weight: 500;
     }
-    .pdf__qa-letter {
-      font-family: "Geist Mono", ui-monospace, monospace;
+    .result__qa-letter {
+      font-family: var(--font-display);
       font-weight: 600;
-      font-size: 10px;
+      font-size: 11px;
       flex-shrink: 0;
-      width: 14px;
-      color: #8693a8;
+      width: 16px;
+      color: var(--text-soft);
     }
-    .pdf__qa-option.is-selected .pdf__qa-letter { color: #2682fd; }
-    .pdf__qa-opttext { flex: 1; }
-    .pdf__qa-check {
+    .result__qa-option.is-selected .result__qa-letter {
+      color: var(--accent);
+    }
+    .result__qa-opttext { flex: 1; }
+    .result__qa-check {
       margin-left: auto;
-      color: #2682fd;
-      font-family: "Geist Mono", ui-monospace, monospace;
+      color: var(--accent);
+      font-family: var(--font-display);
       font-weight: 600;
       font-size: 10px;
-      letter-spacing: 0.05em;
+      letter-spacing: 0.06em;
       text-transform: uppercase;
       flex-shrink: 0;
       white-space: nowrap;
     }
 
-    /* CTA block */
-    .pdf__cta {
-      margin-top: 24px;
-      padding: 20px;
-      background: #072b64;
-      color: white;
-      border-radius: 10px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 14px;
-    }
-    .pdf__cta-text { flex: 1; }
-    .pdf__cta-title {
-      font-family: "Geist Mono", ui-monospace, monospace;
-      font-weight: 600;
-      font-size: 17px;
-      line-height: 1.15;
-      letter-spacing: -0.02em;
-      margin: 0 0 4px;
-    }
-    .pdf__cta-sub {
-      font-size: 13px;
-      opacity: 0.7;
-      margin: 0;
-    }
-    .pdf__cta-btn {
-      background: #2682fd;
-      color: white;
-      padding: 11px 18px;
-      border-radius: 6px;
-      font-weight: 500;
-      font-size: 13px;
-      white-space: nowrap;
-    }
+    .print-only { display: none; }
 
-    /* Footer */
-    .pdf__footer {
-      margin-top: 28px;
-      padding-top: 16px;
-      border-top: 1px solid #d6e3f0;
-      font-size: 10px;
-      color: #8693a8;
-      display: flex;
-      justify-content: space-between;
-    }
+    /* =========================================================
+       Print styles — what the page looks like when the user hits
+       Ctrl+P or clicks the Print button. Strips chrome down to
+       just the result content; preserves brand colors.
+       ========================================================= */
+    @media print {
+      @page { margin: 1.4cm; size: A4; }
 
-    /* Page-break helper for html2pdf */
-    .pdf__page-break {
-      page-break-before: always;
-      break-before: page;
-      height: 0;
-      margin: 0;
-      padding: 0;
+      *, *::before, *::after {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+
+      html, body { background: #ffffff !important; }
+
+      .quiz {
+        max-width: none !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        min-height: auto !important;
+      }
+
+      /* Hide screen-only chrome */
+      .progress,
+      .nav,
+      .no-print,
+      .result__cta-row {
+        display: none !important;
+      }
+
+      /* Show print-only elements */
+      .print-only { display: block !important; }
+
+      /* Brand bar — keep but tighten */
+      .quiz__header {
+        margin-bottom: 24px !important;
+        padding-bottom: 14px !important;
+        border-bottom: 2px solid #072b64;
+      }
+
+      /* Results screen always shows in print */
+      [data-screen="results"] { display: block !important; animation: none !important; }
+      .screen:not([data-screen="results"]) { display: none !important; }
+
+      /* Sizing tweaks for print */
+      .result__title { font-size: 28px !important; }
+      .result__description { font-size: 14px !important; }
+
+      /* Don't split a question across pages */
+      .result__qa {
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
+      }
+
+      /* Result breakdown + answers → page break helpers */
+      .result__breakdown { page-break-inside: avoid; break-inside: avoid; }
+
+      /* Print footer with the demo URL */
+      .print-footer {
+        display: block !important;
+        margin-top: 28px;
+        padding-top: 14px;
+        border-top: 1px solid var(--border);
+        font-size: 11px;
+        color: var(--text-soft);
+        font-family: var(--font-display);
+      }
     }
 
     /* =========================================================
@@ -946,15 +837,25 @@
           <div class="result__bars" id="resultBars"></div>
         </div>
 
-        <div class="result__cta-row">
+        <div class="result__answers">
+          <h3 class="result__answers-title">Your answers in detail</h3>
+          <p class="result__answers-lede">Your selected answer is highlighted. The other options are kept for context — useful for sharing with the rest of your team.</p>
+          <div class="result__qa-list" id="resultQaList"></div>
+        </div>
+
+        <div class="result__cta-row no-print">
           <a class="btn btn--primary btn--lg" id="ctaDemo" href="#" target="_blank" rel="noopener">
             Book a demo
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
           </a>
-          <button class="btn btn--secondary btn--lg" id="downloadPdf">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12m0 0l-4-4m4 4l4-4M5 21h14"/></svg>
-            Download my snapshot
+          <button class="btn btn--secondary btn--lg" id="printBtn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9V2h12v7M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2M6 14h12v8H6z"/></svg>
+            Print this page
           </button>
+        </div>
+
+        <div class="print-only print-footer">
+          Generated via the Axya quiz · axya.co/get-a-demo
         </div>
       </section>
 
@@ -975,8 +876,7 @@
 
   </div>
 
-  <!-- ============== PDF TEMPLATE (hidden, used for download) ============== -->
-  <div class="pdf-template" id="pdfTemplate" aria-hidden="true"></div>
+  <!-- ============== END QUIZ ============== -->
 
 
   <script>
@@ -1122,9 +1022,9 @@
       resultDesc:    $('#resultDescription'),
       resultMeaning: $('#resultMeaning'),
       resultBars:    $('#resultBars'),
+      resultQaList:  $('#resultQaList'),
       ctaDemo:       $('#ctaDemo'),
-      downloadPdf:   $('#downloadPdf'),
-      pdfTemplate:   $('#pdfTemplate')
+      printBtn:      $('#printBtn')
     };
 
     /* =========================================================
@@ -1305,15 +1205,8 @@
           postHeight();
         },
         onFormSubmitted: function () {
-          // 1. Show the results screen
-          // 2. Wait for the page (and fonts) to settle
-          // 3. Auto-download the PDF so it lands on the user's device
-          setTimeout(() => {
-            go('results');
-            setTimeout(() => {
-              generateAndDownloadPdf({ silent: true });
-            }, 1200);
-          }, 200);
+          // Small delay so HubSpot finishes its own redirect/thank-you logic
+          setTimeout(() => go('results'), 200);
         }
       });
     }
@@ -1357,176 +1250,50 @@
           row.querySelector('.result__bar-fill').style.width = `${pct}%`;
         });
       });
-    }
 
-    /* =========================================================
-       PDF DOWNLOAD
-       ========================================================= */
-    async function generateAndDownloadPdf(opts = {}) {
-      const { silent = false } = opts;
-
-      // Build the template content
-      buildPdfTemplate();
-
-      // Let the browser commit the DOM changes before measuring
-      await new Promise(r => requestAnimationFrame(r));
-      await new Promise(r => requestAnimationFrame(r));
-
-      // Wait for web fonts so Geist Mono actually renders in the canvas
-      try {
-        if (document.fonts && document.fonts.ready) {
-          await document.fonts.ready;
-        }
-      } catch (e) {
-        console.warn('document.fonts.ready failed, continuing anyway', e);
-      }
-
-      // html2pdf options
-      const pdfOpts = {
-        margin:      0,
-        filename:    'axya-quiz-snapshot.pdf',
-        image:       { type: 'jpeg', quality: 0.98 },
-        html2canvas: {
-          scale: 2,
-          useCORS: true,
-          backgroundColor: '#ffffff',
-          logging: false,
-          windowWidth: 794,
-          scrollY: 0,
-          scrollX: 0
-        },
-        jsPDF:       { unit: 'pt', format: 'a4', orientation: 'portrait' },
-        pagebreak:   {
-          mode: ['css', 'legacy'],
-          before: '.pdf__page-break',
-          avoid: '.pdf__qa'
-        }
-      };
-
-      // UI state
-      let originalLabel = null;
-      if (!silent && els.downloadPdf) {
-        originalLabel = els.downloadPdf.innerHTML;
-        els.downloadPdf.innerHTML = 'Generating PDF...';
-        els.downloadPdf.disabled = true;
-      }
-
-      try {
-        if (typeof html2pdf === 'undefined') {
-          throw new Error('html2pdf library is not loaded. Check the CDN script tag.');
-        }
-        console.log('[Axya quiz] Generating PDF...');
-        await html2pdf().set(pdfOpts).from(els.pdfTemplate).save();
-        console.log('[Axya quiz] PDF generated successfully.');
-      } catch (err) {
-        console.error('[Axya quiz] PDF generation failed:', err);
-        if (!silent) {
-          alert('Could not generate the PDF. Please try again, or check the browser console for details.');
-        }
-      } finally {
-        if (!silent && els.downloadPdf && originalLabel !== null) {
-          els.downloadPdf.innerHTML = originalLabel;
-          els.downloadPdf.disabled = false;
-        }
-      }
-    }
-
-    els.downloadPdf.addEventListener('click', () => generateAndDownloadPdf());
-
-    function buildPdfTemplate() {
-      const r = state.result;
-      const data = RESULTS[r.letter];
-      const date = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
-
-      // Score-breakdown bars (A / B / C with the winner highlighted)
-      const barLabels = { A: "Mostly A's", B: "Mostly B's", C: "Mostly C's" };
-      const total = QUIZ.length;
-      const scoreBarsHtml = ['A', 'B', 'C'].map(letter => {
-        const count = r.counts[letter];
-        const pct = total ? (count / total) * 100 : 0;
-        const isWinner = letter === r.letter;
-        return `
-          <div class="pdf__score-row${isWinner ? ' is-winner' : ''}">
-            <div class="pdf__score-label">${barLabels[letter]}</div>
-            <div class="pdf__score-track"><div class="pdf__score-fill" style="width:${pct}%"></div></div>
-            <div class="pdf__score-count">${count}</div>
-          </div>
-        `;
-      }).join('');
-
-      // Full Q&A detail — every question with all 3 options, user's pick highlighted
-      const qaHtml = QUIZ.map((q, i) => {
+      // Full Q&A detail — every question with all options, user's pick highlighted
+      els.resultQaList.innerHTML = QUIZ.map((q, i) => {
         const userPick = state.answers[i];
         const optionsHtml = q.opts.map(opt => {
           const isSelected = opt.letter === userPick;
           return `
-            <li class="pdf__qa-option${isSelected ? ' is-selected' : ''}">
-              <span class="pdf__qa-letter">${opt.letter}</span>
-              <span class="pdf__qa-opttext">${opt.text}</span>
-              ${isSelected ? '<span class="pdf__qa-check">✓ Your pick</span>' : ''}
+            <li class="result__qa-option${isSelected ? ' is-selected' : ''}">
+              <span class="result__qa-letter">${opt.letter}</span>
+              <span class="result__qa-opttext">${escapeHtml(opt.text)}</span>
+              ${isSelected ? '<span class="result__qa-check">✓ Your pick</span>' : ''}
             </li>
           `;
         }).join('');
         return `
-          <div class="pdf__qa">
-            <div class="pdf__qa-header">
-              <span class="pdf__qa-num">Q${i + 1}</span>
-              <p class="pdf__qa-question">${q.q}</p>
+          <div class="result__qa">
+            <div class="result__qa-header">
+              <span class="result__qa-num">Q${i + 1}</span>
+              <p class="result__qa-question">${escapeHtml(q.q)}</p>
             </div>
-            <ul class="pdf__qa-options">${optionsHtml}</ul>
+            <ul class="result__qa-options">${optionsHtml}</ul>
           </div>
         `;
       }).join('');
-
-      els.pdfTemplate.innerHTML = `
-        <!-- ============== PAGE 1: SUMMARY ============== -->
-        <div class="pdf__header">
-          <div class="pdf__brand"><span class="pdf__brand-dot"></span><span>Axya</span></div>
-          <div class="pdf__date">${date}</div>
-        </div>
-
-        <div class="pdf__eyebrow">Is Axya right for your team — your snapshot</div>
-        <h1 class="pdf__title">${data.title}</h1>
-        <p class="pdf__lede">${data.description}</p>
-
-        <div class="pdf__section">
-          <div class="pdf__section-title">What this means</div>
-          <div class="pdf__callout">${data.meaning}</div>
-        </div>
-
-        <div class="pdf__section">
-          <div class="pdf__section-title">Your answer pattern</div>
-          <div class="pdf__score-bars">${scoreBarsHtml}</div>
-        </div>
-
-        <div class="pdf__cta">
-          <div class="pdf__cta-text">
-            <p class="pdf__cta-title">Ready to see Axya in action?</p>
-            <p class="pdf__cta-sub">Get a 30-minute walkthrough tailored to your team — axya.co/get-a-demo</p>
-          </div>
-          <div class="pdf__cta-btn">Book a demo →</div>
-        </div>
-
-        <!-- ============== PAGE 2: ANSWER DETAIL ============== -->
-        <div class="pdf__page-break"></div>
-
-        <div class="pdf__header">
-          <div class="pdf__brand"><span class="pdf__brand-dot"></span><span>Axya</span></div>
-          <div class="pdf__date">${date}</div>
-        </div>
-
-        <div class="pdf__eyebrow">Detailed answer breakdown</div>
-        <h2 class="pdf__title pdf__title--small">All 5 questions, with your picks highlighted</h2>
-        <p class="pdf__lede">Your selected answer is shown with a check mark. The other options are kept for context — useful for sharing with the rest of your team.</p>
-
-        <div class="pdf__section">${qaHtml}</div>
-
-        <div class="pdf__footer">
-          <span>axya.co</span>
-          <span>Generated ${date}</span>
-        </div>
-      `;
     }
+
+    function escapeHtml(str) {
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    /* =========================================================
+       PRINT — wires the button to the browser's native print
+       dialog (same as Ctrl+P / Cmd+P). The user can then save
+       as PDF or send to a printer. The @media print CSS at the
+       top of the file controls how the page renders on paper.
+       ========================================================= */
+    els.printBtn.addEventListener('click', () => {
+      window.print();
+    });
 
     /* =========================================================
        Iframe auto-resize — tells the parent page how tall we are
