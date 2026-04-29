@@ -579,29 +579,30 @@
       top: 0;
       left: 0;
       width: 794px;          /* A4 @ 96dpi */
-      padding: 56px 64px;
+      padding: 48px 56px;
       background: #ffffff;
       color: #081a33;
       font-family: "Geist", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       box-sizing: border-box;
-      /* keep in render flow but visually off-screen */
       transform: translateY(-200vh);
       pointer-events: none;
       z-index: -1;
     }
     .pdf-template * { box-sizing: border-box; }
+
+    /* Header / brand row */
     .pdf__header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding-bottom: 24px;
+      padding-bottom: 18px;
       border-bottom: 2px solid #072b64;
-      margin-bottom: 36px;
+      margin-bottom: 28px;
     }
     .pdf__brand {
       font-family: "Geist Mono", ui-monospace, "SF Mono", Menlo, monospace;
       font-weight: 600;
-      font-size: 22px;
+      font-size: 20px;
       letter-spacing: -0.02em;
       color: #072b64;
       display: flex;
@@ -609,41 +610,50 @@
       gap: 10px;
     }
     .pdf__brand-dot {
-      width: 10px;
-      height: 10px;
+      width: 9px;
+      height: 9px;
       border-radius: 50%;
       background: #2682fd;
     }
     .pdf__date {
-      font-size: 13px;
+      font-size: 12px;
       color: #4a5876;
+      font-variant-numeric: tabular-nums;
     }
+
+    /* Result hero */
     .pdf__eyebrow {
       font-family: "Geist Mono", ui-monospace, monospace;
-      font-size: 11px;
+      font-size: 10px;
       font-weight: 500;
-      letter-spacing: 0.08em;
+      letter-spacing: 0.1em;
       text-transform: uppercase;
       color: #2682fd;
-      margin-bottom: 12px;
+      margin-bottom: 10px;
     }
     .pdf__title {
       font-family: "Geist Mono", ui-monospace, monospace;
       font-weight: 600;
-      font-size: 38px;
+      font-size: 32px;
       line-height: 1.05;
       letter-spacing: -0.03em;
-      margin: 0 0 20px;
+      margin: 0 0 14px;
       color: #072b64;
     }
+    .pdf__title--small {
+      font-size: 22px;
+      margin-bottom: 10px;
+    }
     .pdf__lede {
-      font-size: 16px;
+      font-size: 14px;
       line-height: 1.55;
       color: #4a5876;
-      margin: 0 0 32px;
+      margin: 0 0 24px;
     }
+
+    /* Generic section + section title */
     .pdf__section {
-      margin-bottom: 28px;
+      margin-bottom: 22px;
     }
     .pdf__section-title {
       font-family: "Geist Mono", ui-monospace, monospace;
@@ -652,87 +662,190 @@
       letter-spacing: 0.1em;
       text-transform: uppercase;
       color: #8693a8;
-      margin: 0 0 12px;
+      margin: 0 0 10px;
     }
+
+    /* "What this means" callout */
     .pdf__callout {
-      padding: 20px 24px;
+      padding: 16px 20px;
       background: #e7f1ff;
       border-left: 3px solid #2682fd;
       border-radius: 0 8px 8px 0;
-      font-size: 15px;
+      font-size: 14px;
       line-height: 1.5;
       color: #081a33;
     }
-    .pdf__answers {
+
+    /* Score breakdown bars */
+    .pdf__score-bars {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      padding: 18px 20px;
+      background: #f1f9ff;
+      border-radius: 8px;
+    }
+    .pdf__score-row {
+      display: grid;
+      grid-template-columns: 90px 1fr 28px;
+      gap: 12px;
+      align-items: center;
+      font-size: 13px;
+    }
+    .pdf__score-label { color: #4a5876; }
+    .pdf__score-track {
+      height: 8px;
+      background: #ffffff;
+      border-radius: 99px;
+      overflow: hidden;
+    }
+    .pdf__score-fill {
+      height: 100%;
+      background: #b8cce0;
+      border-radius: 99px;
+    }
+    .pdf__score-row.is-winner .pdf__score-fill { background: #2682fd; }
+    .pdf__score-row.is-winner .pdf__score-label { color: #072b64; font-weight: 600; }
+    .pdf__score-count {
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+      color: #4a5876;
+      font-weight: 500;
+    }
+    .pdf__score-row.is-winner .pdf__score-count { color: #072b64; font-weight: 600; }
+
+    /* Q&A detail blocks (page 2) */
+    .pdf__qa {
+      margin-bottom: 18px;
+      page-break-inside: avoid;
+      break-inside: avoid;
+    }
+    .pdf__qa-header {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+    .pdf__qa-num {
+      font-family: "Geist Mono", ui-monospace, monospace;
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      color: #2682fd;
+      background: #e7f1ff;
+      padding: 4px 8px;
+      border-radius: 4px;
+      flex-shrink: 0;
+      line-height: 1.2;
+    }
+    .pdf__qa-question {
+      font-size: 13px;
+      font-weight: 600;
+      color: #072b64;
+      line-height: 1.35;
+      margin: 2px 0 0;
+    }
+    .pdf__qa-options {
       list-style: none;
       padding: 0;
-      margin: 0;
+      margin: 0 0 0 36px;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
     }
-    .pdf__answer {
-      padding: 14px 0;
-      border-bottom: 1px solid #d6e3f0;
-      display: grid;
-      grid-template-columns: 24px 1fr;
-      gap: 16px;
-      font-size: 13px;
-      line-height: 1.45;
+    .pdf__qa-option {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 7px 10px;
+      border-radius: 5px;
+      font-size: 11.5px;
+      line-height: 1.4;
+      color: #4a5876;
+      border: 1px solid transparent;
     }
-    .pdf__answer:last-child { border-bottom: none; }
-    .pdf__answer-num {
-      font-variant-numeric: tabular-nums;
+    .pdf__qa-option.is-selected {
+      background: #e7f1ff;
+      border-color: #2682fd;
+      color: #072b64;
+      font-weight: 500;
+    }
+    .pdf__qa-letter {
+      font-family: "Geist Mono", ui-monospace, monospace;
+      font-weight: 600;
+      font-size: 10px;
+      flex-shrink: 0;
+      width: 14px;
       color: #8693a8;
-      font-weight: 500;
     }
-    .pdf__answer-q {
-      color: #081a33;
-      font-weight: 500;
-      margin-bottom: 4px;
+    .pdf__qa-option.is-selected .pdf__qa-letter { color: #2682fd; }
+    .pdf__qa-opttext { flex: 1; }
+    .pdf__qa-check {
+      margin-left: auto;
+      color: #2682fd;
+      font-family: "Geist Mono", ui-monospace, monospace;
+      font-weight: 600;
+      font-size: 10px;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      flex-shrink: 0;
+      white-space: nowrap;
     }
-    .pdf__answer-a { color: #4a5876; }
+
+    /* CTA block */
     .pdf__cta {
-      margin-top: 36px;
-      padding: 24px;
+      margin-top: 24px;
+      padding: 20px;
       background: #072b64;
       color: white;
-      border-radius: 12px;
+      border-radius: 10px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      gap: 16px;
+      gap: 14px;
     }
-    .pdf__cta-text {
-      flex: 1;
-    }
+    .pdf__cta-text { flex: 1; }
     .pdf__cta-title {
       font-family: "Geist Mono", ui-monospace, monospace;
       font-weight: 600;
-      font-size: 20px;
+      font-size: 17px;
       line-height: 1.15;
       letter-spacing: -0.02em;
       margin: 0 0 4px;
     }
     .pdf__cta-sub {
-      font-size: 14px;
+      font-size: 13px;
       opacity: 0.7;
       margin: 0;
     }
     .pdf__cta-btn {
       background: #2682fd;
       color: white;
-      padding: 12px 20px;
-      border-radius: 8px;
+      padding: 11px 18px;
+      border-radius: 6px;
       font-weight: 500;
-      font-size: 14px;
+      font-size: 13px;
       white-space: nowrap;
     }
+
+    /* Footer */
     .pdf__footer {
-      margin-top: 36px;
-      padding-top: 20px;
+      margin-top: 28px;
+      padding-top: 16px;
       border-top: 1px solid #d6e3f0;
-      font-size: 11px;
+      font-size: 10px;
       color: #8693a8;
       display: flex;
       justify-content: space-between;
+    }
+
+    /* Page-break helper for html2pdf */
+    .pdf__page-break {
+      page-break-before: always;
+      break-before: page;
+      height: 0;
+      margin: 0;
+      padding: 0;
     }
 
     /* =========================================================
@@ -1279,13 +1392,15 @@
           backgroundColor: '#ffffff',
           logging: false,
           windowWidth: 794,
-          // Important: html2canvas reads computed styles from the source element,
-          // not the cloned one. Forcing scrollY=0 helps avoid offset bugs.
           scrollY: 0,
           scrollX: 0
         },
         jsPDF:       { unit: 'pt', format: 'a4', orientation: 'portrait' },
-        pagebreak:   { mode: ['avoid-all', 'css', 'legacy'] }
+        pagebreak:   {
+          mode: ['css', 'legacy'],
+          before: '.pdf__page-break',
+          avoid: '.pdf__qa'
+        }
       };
 
       // UI state
@@ -1323,27 +1438,54 @@
       const data = RESULTS[r.letter];
       const date = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
 
-      const answersHtml = QUIZ.map((q, i) => {
-        const letter = state.answers[i];
-        const opt = q.opts.find(o => o.letter === letter);
+      // Score-breakdown bars (A / B / C with the winner highlighted)
+      const barLabels = { A: "Mostly A's", B: "Mostly B's", C: "Mostly C's" };
+      const total = QUIZ.length;
+      const scoreBarsHtml = ['A', 'B', 'C'].map(letter => {
+        const count = r.counts[letter];
+        const pct = total ? (count / total) * 100 : 0;
+        const isWinner = letter === r.letter;
         return `
-          <li class="pdf__answer">
-            <div class="pdf__answer-num">${i + 1}.</div>
-            <div>
-              <div class="pdf__answer-q">${q.q}</div>
-              <div class="pdf__answer-a">${letter ? letter + '. ' + opt.text : '—'}</div>
+          <div class="pdf__score-row${isWinner ? ' is-winner' : ''}">
+            <div class="pdf__score-label">${barLabels[letter]}</div>
+            <div class="pdf__score-track"><div class="pdf__score-fill" style="width:${pct}%"></div></div>
+            <div class="pdf__score-count">${count}</div>
+          </div>
+        `;
+      }).join('');
+
+      // Full Q&A detail — every question with all 3 options, user's pick highlighted
+      const qaHtml = QUIZ.map((q, i) => {
+        const userPick = state.answers[i];
+        const optionsHtml = q.opts.map(opt => {
+          const isSelected = opt.letter === userPick;
+          return `
+            <li class="pdf__qa-option${isSelected ? ' is-selected' : ''}">
+              <span class="pdf__qa-letter">${opt.letter}</span>
+              <span class="pdf__qa-opttext">${opt.text}</span>
+              ${isSelected ? '<span class="pdf__qa-check">✓ Your pick</span>' : ''}
+            </li>
+          `;
+        }).join('');
+        return `
+          <div class="pdf__qa">
+            <div class="pdf__qa-header">
+              <span class="pdf__qa-num">Q${i + 1}</span>
+              <p class="pdf__qa-question">${q.q}</p>
             </div>
-          </li>
+            <ul class="pdf__qa-options">${optionsHtml}</ul>
+          </div>
         `;
       }).join('');
 
       els.pdfTemplate.innerHTML = `
+        <!-- ============== PAGE 1: SUMMARY ============== -->
         <div class="pdf__header">
           <div class="pdf__brand"><span class="pdf__brand-dot"></span><span>Axya</span></div>
           <div class="pdf__date">${date}</div>
         </div>
 
-        <div class="pdf__eyebrow">Your supplier-management snapshot</div>
+        <div class="pdf__eyebrow">Is Axya right for your team — your snapshot</div>
         <h1 class="pdf__title">${data.title}</h1>
         <p class="pdf__lede">${data.description}</p>
 
@@ -1353,17 +1495,31 @@
         </div>
 
         <div class="pdf__section">
-          <div class="pdf__section-title">Your answers</div>
-          <ul class="pdf__answers">${answersHtml}</ul>
+          <div class="pdf__section-title">Your answer pattern</div>
+          <div class="pdf__score-bars">${scoreBarsHtml}</div>
         </div>
 
         <div class="pdf__cta">
           <div class="pdf__cta-text">
             <p class="pdf__cta-title">Ready to see Axya in action?</p>
-            <p class="pdf__cta-sub">Get a 30-minute walkthrough tailored to your team.</p>
+            <p class="pdf__cta-sub">Get a 30-minute walkthrough tailored to your team — axya.co/get-a-demo</p>
           </div>
           <div class="pdf__cta-btn">Book a demo →</div>
         </div>
+
+        <!-- ============== PAGE 2: ANSWER DETAIL ============== -->
+        <div class="pdf__page-break"></div>
+
+        <div class="pdf__header">
+          <div class="pdf__brand"><span class="pdf__brand-dot"></span><span>Axya</span></div>
+          <div class="pdf__date">${date}</div>
+        </div>
+
+        <div class="pdf__eyebrow">Detailed answer breakdown</div>
+        <h2 class="pdf__title pdf__title--small">All 5 questions, with your picks highlighted</h2>
+        <p class="pdf__lede">Your selected answer is shown with a check mark. The other options are kept for context — useful for sharing with the rest of your team.</p>
+
+        <div class="pdf__section">${qaHtml}</div>
 
         <div class="pdf__footer">
           <span>axya.co</span>
